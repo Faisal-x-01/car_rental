@@ -1,5 +1,6 @@
 from django.urls import path
 from . import views
+from .dashboard import AdminDashboard
 
 urlpatterns = [
     path('', views.car_list, name='car_list'),
@@ -8,4 +9,5 @@ urlpatterns = [
     path('booking/<int:booking_id>/', views.booking_confirmation, name='booking_confirmation'),
     path('my-bookings/', views.user_bookings, name='user_bookings'),
     path('booking/delete/<int:booking_id>/', views.delete_booking, name='delete_booking'),
+    path('admin/dashboard/', AdminDashboard.as_view(), name='admin_dashboard'),
 ]

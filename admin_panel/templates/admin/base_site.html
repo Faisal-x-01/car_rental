@@ -5,7 +5,7 @@
 
 {% block branding %}
 <h1 id="site-name">
-    <a href="{% url 'admin_panel:index' %}">
+    <a href="{% url 'custom_admin:index' %}">  <!-- تم التعديل هنا -->
         <img src="{% static 'images/logo.png' %}" alt="Logo" height="40">
         {{ site_header|default:_('Django administration') }}
     </a>

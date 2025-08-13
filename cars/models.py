@@ -3,6 +3,7 @@ from django.contrib.auth import get_user_model
 from django.core.validators import MinValueValidator
 from django.core.exceptions import ValidationError
 from django.utils.translation import gettext_lazy as _
+from django.utils import timezone
 
 User = get_user_model()
 
@@ -54,6 +55,7 @@ class Car(models.Model):
     class Meta:
         verbose_name = 'سيارة'
         verbose_name_plural = 'السيارات'
+        ordering = ['-created_at']
 
 class Booking(models.Model):
     STATUS_CHOICES = [
@@ -111,3 +113,85 @@ class Booking(models.Model):
     class Meta:
         verbose_name = 'حجز'
         verbose_name_plural = 'الحجوزات'
+        ordering = ['-created_at']
+
+# نماذج جديدة
+class CarReview(models.Model):
+    car = models.ForeignKey(
+        Car, 
+        on_delete=models.CASCADE, 
+        related_name='reviews',
+        verbose_name='السيارة'
+    )
+    user = models.ForeignKey(
+        User, 
+        on_delete=models.CASCADE,
+        verbose_name='المستخدم'
+    )
+    rating = models.PositiveSmallIntegerField(
+        choices=[(i, i) for i in range(1, 6)],
+        verbose_name='التقييم'
+    )
+    comment = models.TextField(blank=True, verbose_name='التعليق')
+    created_at = models.DateTimeField(auto_now_add=True, verbose_name='تاريخ الإنشاء')
+
+    class Meta:
+        verbose_name = 'تقييم سيارة'
+        verbose_name_plural = 'تقييمات السيارات'
+        ordering = ['-created_at']
+
+    def __str__(self):
+        return f"تقييم {self.car} بواسطة {self.user}"
+
+class Discount(models.Model):
+    car = models.ForeignKey(
+        Car, 
+        on_delete=models.CASCADE,
+        verbose_name='السيارة'
+    )
+    percentage = models.PositiveIntegerField(verbose_name='النسبة المئوية')
+    start_date = models.DateField(verbose_name='تاريخ البداية')
+    end_date = models.DateField(verbose_name='تاريخ النهاية')
+    code = models.CharField(max_length=20, unique=True, verbose_name='كود الخصم')
+
+    class Meta:
+        verbose_name = 'خصم'
+        verbose_name_plural = 'الخصومات'
+        ordering = ['-start_date']
+
+    def __str__(self):
+        return f"خصم {self.percentage}% على {self.car}"
+
+class Maintenance(models.Model):
+    MAINTENANCE_TYPES = [
+        ('routine', 'صيانة دورية'),
+        ('repair', 'إصلاح عطل'),
+        ('accident', 'حادث'),
+    ]
+    car = models.ForeignKey(
+        Car, 
+        on_delete=models.CASCADE,
+        verbose_name='السيارة'
+    )
+    type = models.CharField(
+        max_length=50, 
+        choices=MAINTENANCE_TYPES,
+        verbose_name='نوع الصيانة'
+    )
+    cost = models.DecimalField(
+        max_digits=10, 
+        decimal_places=2,
+        verbose_name='التكلفة'
+    )
+    notes = models.TextField(blank=True, verbose_name='ملاحظات')
+    start_date = models.DateField(verbose_name='تاريخ البدء')
+    end_date = models.DateField(verbose_name='تاريخ الانتهاء')
+    is_active = models.BooleanField(default=True, verbose_name='نشط؟')
+
+    class Meta:
+        verbose_name = 'صيانة'
+        verbose_name_plural = 'صيانة السيارات'
+        ordering = ['-start_date']
+
+    def __str__(self):
+        return f"صيانة {self.car} ({self.get_type_display()})"

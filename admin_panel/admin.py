@@ -1,40 +1,57 @@
 from django.contrib import admin
 from django.contrib.admin import AdminSite
-from django.utils.translation import gettext_lazy as _
-from cars.models import Car, Booking
-from users.models import CustomUser, Customer
 from django.urls import reverse
 from django.utils.html import format_html
-
+from django.utils.translation import gettext_lazy as _
+from django.urls import path
+from . import views
+from cars.models import Car, Booking, CarReview, Discount, Maintenance
+from users.models import CustomUser, Customer
 
 class CustomAdminSite(AdminSite):
-    site_header = _("إدارة تأجير السيارات")
-    site_title = _("لوحة التحكم")
-    index_title = _("مرحباً في نظام الإدارة")
+    site_header = _("نظام إدارة تأجير السيارات")
+    site_title = _("لوحة التحكم الإدارية")
+    index_title = _("مرحباً في النظام")
     site_url = None
 
-    def get_app_list(self, request):
-        app_list = super().get_app_list(request)
-        # تخصيص ترتيب التطبيقات
-        ordered_apps = []
-        app_mapping = {app['app_label']: app for app in app_list}
-        
-        for app_label in ['cars', 'users', 'auth']:
-            if app_label in app_mapping:
-                ordered_apps.append(app_mapping[app_label])
-        
-        return ordered_apps
+    def get_urls(self):
+        urls = super().get_urls()
+        # إضافة مسار لوحة التحكم
+        custom_urls = [
+            path('dashboard/', self.admin_view(views.admin_dashboard), name='dashboard'),
+        ]
+        return custom_urls + urls
 
 custom_admin_site = CustomAdminSite(name='custom_admin')
 
-# تسجيل النماذج مع الواجهة المخصصة
-custom_admin_site.register(Car)
-custom_admin_site.register(Booking)
-custom_admin_site.register(CustomUser)
-custom_admin_site.register(Customer)
-
+# تسجيل النماذج مع واجهة الإدارة المخصصة
+@admin.register(Car, site=custom_admin_site)
 class CarAdmin(admin.ModelAdmin):
-    # ...
+    list_display = ('brand', 'model', 'year', 'price_per_day', 'is_available', 'view_on_site')
+    list_editable = ('price_per_day', 'is_available')
+    
     def view_on_site(self, obj):
         url = reverse('car_detail', kwargs={'car_id': obj.id})
         return format_html('<a class="button" href="{}" target="_blank">معاينة في الموقع</a>', url)
+
+@admin.register(CustomUser, site=custom_admin_site)
+class CustomUserAdmin(admin.ModelAdmin):
+    list_display = ('username', 'email', 'is_staff', 'is_admin', 'is_active')
+    list_filter = ('is_staff', 'is_admin', 'is_active')
+    search_fields = ('username', 'email')
+    actions = ['activate_users', 'deactivate_users']
+    
+    def activate_users(self, request, queryset):
+        queryset.update(is_active=True)
+    activate_users.short_description = "تفعيل المستخدمين المحددين"
+    
+    def deactivate_users(self, request, queryset):
+        queryset.update(is_active=False)
+    deactivate_users.short_description = "تعطيل المستخدمين المحددين"
+
+# تسجيل النماذج الأخرى
+custom_admin_site.register(Booking, admin.ModelAdmin)
+custom_admin_site.register(CarReview, admin.ModelAdmin)
+custom_admin_site.register(Discount, admin.ModelAdmin)
+custom_admin_site.register(Maintenance, admin.ModelAdmin)
+custom_admin_site.register(Customer, admin.ModelAdmin)

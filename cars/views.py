@@ -23,13 +23,11 @@ def booking_view(request, car_id):
             start_date = form.cleaned_data['start_date']
             end_date = form.cleaned_data['end_date']
             
-            # التحقق من أن تاريخ الانتهاء بعد تاريخ البدء
             if start_date >= end_date:
                 messages.error(request, 'تاريخ الانتهاء يجب أن يكون بعد تاريخ البدء')
                 form.add_error('end_date', 'تاريخ الانتهاء يجب أن يكون بعد تاريخ البدء')
                 return render(request, 'cars/booking_form.html', {'car': car, 'form': form})
             
-            # التحقق من عدم وجود حجوزات متضاربة
             conflicting_bookings = Booking.objects.filter(
                 car=car,
                 start_date__lt=end_date,
@@ -42,17 +40,23 @@ def booking_view(request, car_id):
                 form.add_error(None, conflict_msg)
                 return render(request, 'cars/booking_form.html', {'car': car, 'form': form})
             
-            # إنشاء الحجز
             try:
                 booking = form.save(commit=False)
                 booking.car = car
                 booking.user = request.user
                 
-                # حساب السعر الإجمالي
                 delta = end_date - start_date
-                booking.total_price = delta.days * car.price_per_day
-                
+                total_price = delta.days * car.price_per_day
+
+                # حساب الخصم إذا كان موجود
+                discount_amount = 0
+                if hasattr(car, 'discount_percentage') and car.discount_percentage:
+                    discount_amount = (total_price * car.discount_percentage) / 100
+                    total_price -= discount_amount
+
+                booking.total_price = total_price
                 booking.save()
+
                 messages.success(request, 'تم الحجز بنجاح!')
                 return redirect('booking_confirmation', booking_id=booking.id)
                 
@@ -60,14 +64,11 @@ def booking_view(request, car_id):
                 messages.error(request, f'حدث خطأ أثناء الحجز: {str(e)}')
                 return render(request, 'cars/booking_form.html', {'car': car, 'form': form})
         else:
-            # إصلاح: عرض أخطاء النموذج بشكل صحيح
             for field, errors in form.errors.items():
                 for error in errors:
-                    # الحصول على اسم الحقل المعروض (label) إذا وجد
                     field_name = form.fields[field].label if field in form.fields else field
                     messages.error(request, f'{field_name}: {error}')
     else:
-        # تعيين تواريخ افتراضية: البدء غدًا، الانتهاء بعد 3 أيام
         tomorrow = timezone.now().date() + timezone.timedelta(days=1)
         three_days_later = tomorrow + timezone.timedelta(days=3)
         
@@ -78,7 +79,8 @@ def booking_view(request, car_id):
     
     return render(request, 'cars/booking_form.html', {
         'car': car,
-        'form': form
+        'form': form,
+        'discount_percentage': getattr(car, 'discount_percentage', 0),
     })
 
 @login_required

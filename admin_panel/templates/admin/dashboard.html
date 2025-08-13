@@ -2,11 +2,25 @@
 {% load i18n static %}
 
 {% block content %}
+
+
+<!-- شريط التنقل -->
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark mb-4">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="{% url 'admin_dashboard' %}">
+            <i class="fas fa-tachometer-alt"></i> لوحة التحكم
+        </a>
+        <a class="btn btn-secondary ms-2" href="/admin/">
+            <i class="fas fa-cogs"></i> Django Admin
+        </a>
+    </div>
+</nav>
+
 <div class="dashboard">
     <h1>لوحة تحكم إدارة السيارات</h1>
     
     <div class="dashboard-stats">
-        <div class="stat-card">
+        <div class="stat-card gradient-revenue">
             <div class="stat-icon">
                 <i class="fas fa-money-bill-wave"></i>
             </div>
@@ -16,7 +30,7 @@
             </div>
         </div>
         
-        <div class="stat-card">
+        <div class="stat-card gradient-cars">
             <div class="stat-icon">
                 <i class="fas fa-car"></i>
             </div>
@@ -31,7 +45,7 @@
             </div>
         </div>
         
-        <div class="stat-card">
+        <div class="stat-card gradient-maintenance">
             <div class="stat-icon">
                 <i class="fas fa-tools"></i>
             </div>
@@ -162,6 +176,15 @@
     --warning: #ffc107;
     --danger: #dc3545;
     --info: #17a2b8;
+
+    --gradient-revenue-start: #4facfe;
+    --gradient-revenue-end: #00f2fe;
+
+    --gradient-cars-start: #43e97b;
+    --gradient-cars-end: #38f9d7;
+
+    --gradient-maintenance-start: #fa709a;
+    --gradient-maintenance-end: #fee140;
 }
 
 .dashboard {
@@ -190,52 +213,61 @@
     flex: 1;
     min-width: 250px;
     background: #fff;
-    border-radius: 10px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    border-radius: 12px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
     padding: 20px;
     display: flex;
     align-items: center;
     transition: transform 0.3s ease, box-shadow 0.3s ease;
+    color: white;
 }
 
 .stat-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.12);
+    transform: translateY(-7px);
+    box-shadow: 0 10px 20px rgba(0,0,0,0.2);
 }
 
 .stat-icon {
     width: 60px;
     height: 60px;
-    background: rgba(42, 61, 102, 0.1);
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
     margin-left: 15px;
+    font-size: 28px;
+    flex-shrink: 0;
 }
 
-.stat-icon i {
-    font-size: 24px;
-    color: var(--primary);
+/* Gradient backgrounds for cards */
+.gradient-revenue {
+    background: linear-gradient(135deg, var(--gradient-revenue-start), var(--gradient-revenue-end));
+}
+
+.gradient-cars {
+    background: linear-gradient(135deg, var(--gradient-cars-start), var(--gradient-cars-end));
+}
+
+.gradient-maintenance {
+    background: linear-gradient(135deg, var(--gradient-maintenance-start), var(--gradient-maintenance-end));
 }
 
 .stat-info h2 {
     margin: 0 0 5px 0;
-    font-size: 1.1rem;
-    color: var(--dark);
-    font-weight: 600;
+    font-size: 1.2rem;
+    font-weight: 700;
 }
 
 .stat-info p {
     margin: 0;
-    font-size: 1.6rem;
-    font-weight: 700;
-    color: var(--secondary);
+    font-size: 1.8rem;
+    font-weight: 800;
 }
 
+/* Section styling */
 .dashboard-section {
     background: #fff;
-    border-radius: 10px;
+    border-radius: 12px;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
     padding: 25px;
     margin-bottom: 30px;
@@ -252,7 +284,7 @@
 
 .section-header h2 {
     margin: 0;
-    font-size: 1.3rem;
+    font-size: 1.4rem;
     color: var(--primary);
     display: flex;
     align-items: center;
@@ -266,13 +298,13 @@
 .btn-view-all {
     background: var(--primary);
     color: white;
-    padding: 8px 15px;
-    border-radius: 5px;
-    font-size: 0.9rem;
+    padding: 9px 18px;
+    border-radius: 6px;
+    font-size: 0.95rem;
     text-decoration: none;
     display: flex;
     align-items: center;
-    gap: 5px;
+    gap: 6px;
     transition: background 0.3s ease;
 }
 
@@ -281,45 +313,60 @@
     color: white;
 }
 
+/* Table styling */
+.table-responsive {
+    overflow-x: auto;
+}
+
 .dashboard-table {
     width: 100%;
-    border-collapse: collapse;
+    border-collapse: separate;
+    border-spacing: 0 8px;
 }
 
 .dashboard-table th {
     background-color: var(--primary);
     color: white;
-    padding: 12px 15px;
+    padding: 14px 20px;
     text-align: right;
-    font-weight: 600;
+    font-weight: 700;
+    border-radius: 8px 8px 0 0;
+    position: sticky;
+    top: 0;
+    z-index: 1;
 }
 
 .dashboard-table td {
-    padding: 12px 15px;
+    background: #fff;
+    padding: 14px 20px;
     text-align: right;
-    border-bottom: 1px solid #eee;
     color: #555;
+    vertical-align: middle;
+    border-bottom: 8px solid transparent;
+    border-radius: 0 0 8px 8px;
 }
 
-.dashboard-table tr:nth-child(even) {
-    background-color: #f9f9f9;
+/* Row hover effect */
+.dashboard-table tr:hover td {
+    background-color: #f0f5ff;
+    box-shadow: 0 3px 12px rgba(0,0,0,0.1);
 }
 
-.dashboard-table tr:hover {
-    background-color: #f1f5ff;
-}
-
+/* Car info */
 .car-info {
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: 12px;
 }
 
 .car-info img {
-    border-radius: 4px;
+    border-radius: 6px;
     object-fit: cover;
+    width: 50px;
+    height: 35px;
 }
 
+/* Date label */
 .date-label {
     font-size: 0.85rem;
     color: #777;
@@ -327,48 +374,55 @@
     width: 40px;
 }
 
+/* Status badges */
 .status-badge {
     display: inline-block;
-    padding: 5px 12px;
-    border-radius: 15px;
+    padding: 6px 14px;
+    border-radius: 20px;
     font-size: 0.85rem;
-    font-weight: 600;
+    font-weight: 700;
+    color: white;
+    text-align: center;
+    min-width: 80px;
 }
 
+/* Booking status colors */
 .status-pending {
-    background: rgba(255, 193, 7, 0.2);
-    color: #856404;
+    background: #ffc107;
+    color: #212529;
 }
 
 .status-confirmed {
-    background: rgba(40, 167, 69, 0.2);
-    color: #155724;
+    background: #28a745;
+    color: white;
 }
 
 .status-cancelled {
-    background: rgba(220, 53, 69, 0.2);
-    color: #721c24;
+    background: #dc3545;
+    color: white;
 }
 
 .status-completed {
-    background: rgba(23, 162, 184, 0.2);
-    color: #0c5460;
+    background: #17a2b8;
+    color: white;
 }
 
+/* Maintenance status colors */
 .status-active {
-    background: rgba(40, 167, 69, 0.2);
-    color: #155724;
+    background: #28a745;
+    color: white;
 }
 
 .status-inactive {
-    background: rgba(108, 117, 125, 0.2);
-    color: #343a40;
+    background: #6c757d;
+    color: white;
 }
 
 .text-center {
     text-align: center;
 }
 
+/* Footer */
 .dashboard-footer {
     margin-top: 30px;
     text-align: center;
@@ -382,6 +436,7 @@
     margin: 5px 0;
 }
 
+/* Responsive adjustments */
 @media (max-width: 992px) {
     .dashboard-stats {
         flex-direction: column;
@@ -406,6 +461,7 @@
     .dashboard-table {
         display: block;
         overflow-x: auto;
+        white-space: nowrap;
     }
 }
 </style>

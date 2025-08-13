@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
-from .models import CustomUser, Customer
 from django.utils.translation import gettext_lazy as _
+from .models import CustomUser, Customer
 
 class CustomUserAdmin(UserAdmin):
     list_display = ('username', 'email', 'first_name', 'last_name', 'is_staff', 'is_admin', 'is_active')
@@ -9,11 +9,11 @@ class CustomUserAdmin(UserAdmin):
     search_fields = ('username', 'email', 'first_name', 'last_name')
     fieldsets = (
         (None, {'fields': ('username', 'password')}),
-        (_('Personal info'), {'fields': ('first_name', 'last_name', 'email')}),
-        (_('Permissions'), {
+        (_('معلومات شخصية'), {'fields': ('first_name', 'last_name', 'email')}),
+        (_('الصلاحيات'), {
             'fields': ('is_active', 'is_staff', 'is_admin', 'is_superuser', 'groups', 'user_permissions'),
         }),
-        (_('Important dates'), {'fields': ('last_login', 'date_joined')}),
+        (_('تواريخ مهمة'), {'fields': ('last_login', 'date_joined')}),
     )
     add_fieldsets = (
         (None, {
@@ -25,11 +25,11 @@ class CustomUserAdmin(UserAdmin):
 
     def make_employee(self, request, queryset):
         queryset.update(is_employee=True, is_staff=True)
-    make_employee.short_description = "تعيين كموظفين"
-
+    make_employee.short_description = _("تعيين كموظفين")
+    
     def make_admin(self, request, queryset):
         queryset.update(is_admin=True, is_staff=True, is_superuser=True)
-    make_admin.short_description = "تعيين كمسؤولين"
+    make_admin.short_description = _("تعيين كمسؤولين")
 
 @admin.register(Customer)
 class CustomerAdmin(admin.ModelAdmin):

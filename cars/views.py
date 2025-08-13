@@ -60,10 +60,12 @@ def booking_view(request, car_id):
                 messages.error(request, f'حدث خطأ أثناء الحجز: {str(e)}')
                 return render(request, 'cars/booking_form.html', {'car': car, 'form': form})
         else:
-            # إضافة أخطاء النموذج إلى الرسائل
+            # إصلاح: عرض أخطاء النموذج بشكل صحيح
             for field, errors in form.errors.items():
                 for error in errors:
-                    messages.error(request, f'{field}: {error}')
+                    # الحصول على اسم الحقل المعروض (label) إذا وجد
+                    field_name = form.fields[field].label if field in form.fields else field
+                    messages.error(request, f'{field_name}: {error}')
     else:
         # تعيين تواريخ افتراضية: البدء غدًا، الانتهاء بعد 3 أيام
         tomorrow = timezone.now().date() + timezone.timedelta(days=1)

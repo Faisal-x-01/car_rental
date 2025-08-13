@@ -1,9 +1,8 @@
 from django.contrib import admin
 from django.contrib.admin import AdminSite
-from django.urls import reverse
+from django.urls import reverse, path
 from django.utils.html import format_html
 from django.utils.translation import gettext_lazy as _
-from django.urls import path
 from . import views
 from cars.models import Car, Booking, CarReview, Discount, Maintenance
 from users.models import CustomUser, Customer
@@ -22,7 +21,9 @@ class CustomAdminSite(AdminSite):
         ]
         return custom_urls + urls
 
+# إنشاء نسخة مخصصة من لوحة التحكم مع تحديد الـ namespace
 custom_admin_site = CustomAdminSite(name='custom_admin')
+custom_admin_site.app_name = 'custom_admin'  # تحديد الـ namespace
 
 # تسجيل النماذج مع واجهة الإدارة المخصصة
 @admin.register(Car, site=custom_admin_site)

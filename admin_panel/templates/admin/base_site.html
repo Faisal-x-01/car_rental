@@ -5,20 +5,43 @@
 
 {% block branding %}
 <h1 id="site-name">
-    <a href="{% url 'custom_admin:index' %}">  <!-- تم التعديل هنا -->
+    <a href="{% url 'custom_admin:index' %}">
         <img src="{% static 'images/logo.png' %}" alt="Logo" height="40">
         {{ site_header|default:_('Django administration') }}
     </a>
 </h1>
 {% endblock %}
 
-{% block nav-global %}{% endblock %}
+{% block nav-global %}
+<!-- شريط التنقل الجديد -->
+<div class="admin-navigation">
+    <ul>
+        <li><a href="{% url 'custom_admin:index' %}" class="{% if request.path == '/admin/' %}active{% endif %}">
+            <i class="fas fa-tachometer-alt"></i> لوحة التحكم
+        </a></li>
+        
+        <li><a href="{% url 'custom_admin:dashboard' %}" class="{% if request.path == '/admin/dashboard/' %}active{% endif %}">
+            <i class="fas fa-chart-line"></i> الإحصائيات
+        </a></li>
+        
+        <li><a href="{% url 'admin:index' %}" class="{% if request.path|slice:':8' == '/manager/' %}active{% endif %}">
+            <i class="fas fa-cogs"></i> الإدارة المتقدمة
+        </a></li>
+        
+        <li><a href="{% url 'car_list' %}">
+            <i class="fas fa-globe"></i> الموقع الرئيسي
+        </a></li>
+    </ul>
+</div>
+{% endblock %}
 
 {% block extrastyle %}
 <style>
 :root {
     --primary: #2a3d66;
     --secondary: #ff5722;
+    --light: #f8f9fa;
+    --dark: #343a40;
 }
 
 #header {
@@ -72,6 +95,68 @@ body {
 #result_list td {
     text-align: right;
     vertical-align: middle;
+}
+
+/* أنماط شريط التنقل الجديد */
+.admin-navigation {
+    background: #2a3d66;
+    padding: 0;
+    margin: 0 0 20px 0;
+    border-bottom: 2px solid #ff5722;
+}
+
+.admin-navigation ul {
+    display: flex;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.admin-navigation li {
+    margin: 0;
+}
+
+.admin-navigation a {
+    color: white;
+    text-decoration: none;
+    padding: 15px 20px;
+    display: block;
+    transition: all 0.3s;
+    border-right: 1px solid rgba(255,255,255,0.1);
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.admin-navigation a:hover {
+    background: #1e2a4d;
+}
+
+.admin-navigation a.active {
+    background: #ff5722;
+}
+
+.admin-navigation i {
+    font-size: 16px;
+}
+
+/* تعديلات للشاشات الصغيرة */
+@media (max-width: 768px) {
+    .admin-navigation ul {
+        flex-wrap: wrap;
+    }
+    
+    .admin-navigation li {
+        flex: 1 0 50%;
+    }
+    
+    .admin-navigation a {
+        justify-content: center;
+        text-align: center;
+        padding: 12px 5px;
+        font-size: 0.9rem;
+    }
 }
 </style>
 {% endblock %}

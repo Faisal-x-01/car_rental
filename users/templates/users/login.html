@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+<div class="container my-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0">تسجيل الدخول</h4>
+                </div>
+                <div class="card-body">
+                    <form method="POST">
+                        {% csrf_token %}
+                        {{ form|crispy }}
+                        <button type="submit" class="btn btn-booking btn-primary-custom w-100 mt-3">
+                            تسجيل الدخول <i class="fas fa-sign-in-alt ms-2"></i>
+                        </button>
+                    </form>
+                    <div class="mt-3 text-center">
+                        <p>ليس لديك حساب؟ <a href="{% url 'register' %}">سجل الآن</a></p>
+                        <p><a href="#">نسيت كلمة المرور؟</a></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

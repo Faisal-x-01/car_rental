@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+<div class="container my-5">
+    <div class="row">
+        <div class="col-lg-4 mb-4">
+            <div class="card shadow">
+                <div class="card-body text-center">
+                    <div class="avatar mb-3">
+                        <i class="fas fa-user-circle fa-5x text-secondary"></i>
+                    </div>
+                    <h3 class="card-title">{{ user.username }}</h3>
+                    <p class="card-text text-muted">{{ user.email }}</p>
+                    <div class="d-grid">
+                        <a href="{% url 'user_bookings' %}" class="btn btn-booking btn-primary-custom">
+                            <i class="fas fa-car me-2"></i>حجوزاتي
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-lg-8">
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0">معلومات الملف الشخصي</h4>
+                </div>
+                <div class="card-body">
+                    <form method="POST">
+                        {% csrf_token %}
+                        {{ form|crispy }}
+                        <div class="d-grid mt-4">
+                            <button type="submit" class="btn btn-booking btn-primary-custom">
+                                <i class="fas fa-save me-2"></i>حفظ التغييرات
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            
+            <div class="card shadow mt-4">
+                <div class="card-header bg-warning text-dark">
+                    <h4 class="mb-0">تغيير كلمة المرور</h4>
+                </div>
+                <div class="card-body">
+                    <p class="text-muted">لحماية حسابك، ننصح بتغيير كلمة المرور بشكل دوري.</p>
+                    <a href="{{ password_change_url }}" class="btn btn-booking btn-orange">
+                        <i class="fas fa-lock me-2"></i>تغيير كلمة المرور
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

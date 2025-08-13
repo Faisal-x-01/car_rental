@@ -1,0 +1,86 @@
+{% extends "admin/base.html" %}
+{% load static i18n %}
+
+{% block title %}{{ title }} | {{ site_title|default:_('Django site admin') }}{% endblock %}
+
+{% block branding %}
+<h1 id="site-name">
+    <a href="{% url 'admin_panel:index' %}">
+        <img src="{% static 'images/logo.png' %}" alt="Logo" height="40">
+        {{ site_header|default:_('Django administration') }}
+    </a>
+</h1>
+{% endblock %}
+
+{% block nav-global %}{% endblock %}
+
+{% block extrastyle %}
+<style>
+:root {
+    --primary: #2a3d66;
+    --secondary: #ff5722;
+}
+
+#header {
+    background: var(--primary);
+    color: white;
+}
+
+.module h2, .module caption, .inline-group h2 {
+    background: var(--secondary);
+    color: white;
+}
+
+div.breadcrumbs {
+    background: var(--secondary);
+    opacity: 0.8;
+}
+
+.button, input[type=submit], input[type=button], .submit-row input, a.button {
+    background: var(--primary);
+    color: white;
+}
+
+.button:active, input[type=submit]:active, input[type=button]:active,
+.button:focus, input[type=submit]:focus, input[type=button]:focus,
+.button:hover, input[type=submit]:hover, input[type=button]:hover {
+    background: #1e2a4d;
+    color: white;
+}
+
+/* تحسينات للغة العربية */
+body {
+    font-family: 'Tajawal', sans-serif;
+    text-align: right;
+    direction: rtl;
+}
+
+#header #user-tools {
+    text-align: left;
+    direction: ltr;
+}
+
+#changelist-filter {
+    float: left;
+}
+
+/* تخصيص الجدول */
+#result_list th {
+    text-align: right;
+}
+
+#result_list td {
+    text-align: right;
+    vertical-align: middle;
+}
+</style>
+{% endblock %}
+
+{% block footer %}
+<div id="footer">
+    <div class="footer-content">
+        <p>نظام إدارة حجز السيارات &copy; {% now "Y" %}</p>
+        <p>الإصدار 1.0.0 | تطوير: فريق سيارات النخبة</p>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+<div class="container my-5">
+    <div class="row">
+        <div class="col-md-6 mb-4">
+            <div class="car-image-container">
+                <img src="{{ car.image.url }}" alt="{{ car.name }}" class="img-fluid rounded-3 shadow">
+            </div>
+        </div>
+        <div class="col-md-6">
+            <h1 class="car-title mb-3">{{ car.brand }} {{ car.name }}</h1>
+            <h3 class="car-model text-muted mb-4">{{ car.model }} - {{ car.year }}</h3>
+            
+            <div class="car-features mb-4">
+                <div class="d-flex flex-wrap gap-3">
+                    <div class="feature bg-light p-3 rounded text-center">
+                        <i class="fas fa-gas-pump fa-2x mb-2"></i>
+                        <div>{{ car.get_fuel_type_display }}</div>
+                    </div>
+                    <div class="feature bg-light p-3 rounded text-center">
+                        <i class="fas fa-cogs fa-2x mb-2"></i>
+                        <div>{{ car.get_transmission_display }}</div>
+                    </div>
+                    <div class="feature bg-light p-3 rounded text-center">
+                        <i class="fas fa-user fa-2x mb-2"></i>
+                        <div>{{ car.seats }} مقاعد</div>
+                    </div>
+                    <div class="feature bg-light p-3 rounded text-center">
+                        <i class="fas fa-tag fa-2x mb-2"></i>
+                        <div>{{ car.price_per_day }} ريال/يوم</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="price-container bg-light p-4 rounded mb-4">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div class="price-label">السعر اليومي:</div>
+                    <div class="price fs-2 fw-bold">{{ car.price_per_day }} ريال</div>
+                </div>
+            </div>
+            
+            <div class="car-description mb-4">
+                <h4 class="mb-3">المواصفات</h4>
+                <p>{{ car.description|default:"سيارة فاخرة بتصميم أنيق وأداء متميز. تتميز براحة فائقة وتقنيات متطورة." }}</p>
+            </div>
+            
+            {% if car.is_available %}
+            <a href="{% url 'booking_view' car.id %}" class="btn btn-booking btn-primary-custom w-100">
+                حجز السيارة الآن <i class="fas fa-calendar-check ms-2"></i>
+            </a>
+            {% else %}
+            <button class="btn btn-secondary w-100 py-3" disabled>
+                غير متاح للحجز حالياً
+            </button>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}
